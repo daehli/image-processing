@@ -103,25 +103,24 @@ Ce filtre ressemble au filtre de réhaussement des contours, mais au lieu de dé
 Il aurait été intéressant de connaitre pourquoi il se forme un encadré noir autour d'une photo, lorsque `sigma` augmente. Il aurait été aussi intéressant de vérifier mon algorithme de filtres détecteurs d'arêtes puisque celui-ci me retour le même filtre sur 2 masques différents.
 
 
-
-[boatM1]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatM1.png
-[boatM2]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatM2.png
-[boatM2]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatM2.png
-[boatM3]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatM3.png
-[boatM4]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatM4.png
-[boatMatrice]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatMatrice.png
-[boatGaussSigma1]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigma1.png
-[boatGaussSigma2]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigma2.png
-[boatGaussSigma3]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigma3.png
-[boatGaussSigma4]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigma4.png
-[boatGaussSigma7]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigma7.png
-[boatGaussSigmaDemi]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigmaDemi.png
-[boatGaussSigma2M3]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigma2M3.png
-[boatGaussSigma3M3]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigma3M3.png
-[boatGaussSigma7M3]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigma7M3.png
-[boatGaussSigma2M4]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigma2M3.png
-[boatGaussSigma3M4]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigma3M3.png
-[boatGaussSigma7M4]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigma7M3.png
-[boatSobelX]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatSobelX.png
-[boatSobelY]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatSobelY.png
-[boatSobelXY]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatSobelYX.png
+[boatM1]: https://github.com/daehli/image-processing/raw/master/images/boatM1.png
+[boatM2]: https://github.com/daehli/image-processing/raw/master/images/boatM2.png
+[boatM2]: https://github.com/daehli/image-processing/raw/master/images/boatM2.png
+[boatM3]: https://github.com/daehli/image-processing/raw/master/images/boatM3.png
+[boatM4]: https://github.com/daehli/image-processing/raw/master/images/boatM4.png
+[boatMatrice]: https://github.com/daehli/image-processing/raw/master/images/boatMatrice.png
+[boatGaussSigma1]: https://github.com/daehli/image-processing/raw/master/images/boatGaussSigma1.png
+[boatGaussSigma2]: https://github.com/daehli/image-processing/raw/master/images/boatGaussSigma2.png
+[boatGaussSigma3]: https://github.com/daehli/image-processing/raw/master/images/boatGaussSigma3.png
+[boatGaussSigma4]: https://github.com/daehli/image-processing/raw/master/images/boatGaussSigma4.png
+[boatGaussSigma7]: https://github.com/daehli/image-processing/raw/master/images/boatGaussSigma7.png
+[boatGaussSigmaDemi]: https://github.com/daehli/image-processing/raw/master/images/boatGaussSigmaDemi.png
+[boatGaussSigma2M3]: https://github.com/daehli/image-processing/raw/master/images/boatGaussSigma2M3.png
+[boatGaussSigma3M3]: https://github.com/daehli/image-processing/raw/master/images/boatGaussSigma3M3.png
+[boatGaussSigma7M3]: https://github.com/daehli/image-processing/raw/master/images/boatGaussSigma7M3.png
+[boatGaussSigma2M4]: https://github.com/daehli/image-processing/raw/master/images/boatGaussSigma2M3.png
+[boatGaussSigma3M4]: https://github.com/daehli/image-processing/raw/master/images/boatGaussSigma3M3.png
+[boatGaussSigma7M4]: https://github.com/daehli/image-processing/raw/master/images/boatGaussSigma7M3.png
+[boatSobelX]: https://github.com/daehli/image-processing/raw/master/images/boatSobelX.png
+[boatSobelY]: https://github.com/daehli/image-processing/raw/master/images/boatSobelY.png
+[boatSobelXY]: https://github.com/daehli/image-processing/raw/master/images/boatSobelYX.png
