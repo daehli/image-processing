@@ -1,197 +1,127 @@
-# Rapport Daehli 
+# TP3 : Filtres linéaires & Convoltion
 
-Pour lire mon rapport veuillez cliquer sur le lien suivant 
+ Réaliser par:
 
-[Rapport de Daehli Nadeau-Otis](https://git.unistra.fr/nadeauotis/P4y/blob/master/TP3/src/rapportDaehli.md)
+**Daehli Nadeau-Otis**
 
-# Séance 3
+# Introduction
 
-Thèmes abordés :  filtres linéaires, convolution
+Dans ce TP, nous allons appliquer différents filtres sur des images en niveau de gris. Les filtres abordés seront le filtre de lissage, filtre de réhaussement des contours et le filtre détecteur d'arêtes (Sobel).
+
+## Organisation du Repo
+
+Chacun des filtres sera transformé en exécutable. Les instructions de compilation et d'exécution se trouvent au début du fichier.  
+
+* [mainConvolution.cpp](https://git.unistra.fr/nadeauotis/P4y/blob/master/TP3/src/mainConvolution.cpp#L2-5)
+* [mainSobel.cpp](https://git.unistra.fr/nadeauotis/P4y/blob/master/TP3/src/mainSobel.cpp#L4-7)
+
+J'ai aussi réalisé un petit script qui permet de convertir toutes les images PGM en PNG. Ensuite, le script supprime toutes les images avec l'extension `.pgm` Le script ce trouve dans le dossier `/images` et ce nomme [`convert.sh`](https://git.unistra.fr/nadeauotis/P4y/blob/master/TP3/src/images/convert.sh#L2-7).
+
 
 ## Convolution
 
-
-La convolution discrète d'une image $`I`$ à deux dimensions par un masque ou noyau de convolution $`M`$ de taille $`N_x\times N_y`$ est définie en un point par :
-
-
-```math
-(I\ast M)(i,j)=\sum_{k=0}^{N_x-1} \sum_{l=0}^{N_y-1} M(k,l) I(i+k-c_x,j+l-c_y),
-```
-
-où $`(c_x,c_y)=(\lfloor{\frac{N_x}{2}\rfloor},\lfloor{\frac{N_y}{2}\rfloor})`$ sont les coordonnées du centre du masque. Le masque peut être vu comme une image dont les coordonnées $`(0,0)`$ représentent le coin supérieur gauche et $`(N_x-1,N_y-1)`$ le coin inférieur droit.
-
-Généralement le masque est carré de taille impaire mais ce n'est pas une obligation.
-
-Les coefficients du masque sont à valeurs réelles ; le résultat (l'image convoluée) est donc également à valeurs réelles.
-
-### Travail à réaliser
-
-Écrire une fonction `convolve` qui calcule la convolution d'une image à partir d'un masque passé en paramètres et qui retourne l'image convoluée. Le type du résultat sera une image de type `double`.
-Les coefficients du masque pourront être stockés dans une image de type `double`.
-La valeur des points situés en dehors du support de l'image sera fixée arbitrairement à 0.
+La fonction de convolution transforme une image initiale avec un masque en une nouvelle image. Le principe de la convolution est d’itérer à travers toutes les [rangées et colonne de l'image initiale (pixel).](https://git.unistra.fr/nadeauotis/P4y/blob/master/TP3/src/bas_niveau.hpp#L212-217) Ensuite, on applique un [filtre sur tout les pixels](https://git.unistra.fr/nadeauotis/P4y/blob/master/TP3/src/bas_niveau.hpp#L221-234) de l'image à transformer.
 
 ## Filtres de lissage
 
-Les filtres de lissage utilisent des masques dont les valeurs sont toutes positives.
-Voici des exemples de masques de lissage :
+Le filtre de lissage permet de réduire les détails d'une image. Comme son nom l'indique, elle lisse l'image. Premièrement nous allons tester, notre fonction sur un filtre [`M1`](https://git.unistra.fr/nadeauotis/P4y/blob/master/TP3/src/mainConvolution.cpp#L32-36). Ce filtre devrait lisser l'image uniformément.
 
-$`
-M_1=
-\frac{1}{9}
-\begin{bmatrix}
-1 & 1 & 1\\
-1 & 1 & 1\\
-1 & 1 & 1
-\end{bmatrix}
-`$,
-$`\;
-M_2=
-\frac{1}{16}
-\begin{bmatrix}
-1 & 2 & 1\\
-2 & 4 & 2\\
-1 & 2 & 1
-\end{bmatrix}
-`$
+Identité | M1 | M2 |
+---  | ---  | ---  |
+![alt text][boatMatrice] |  ![alt text][boatM1]|  ![alt text][boatM2] |
+
+L'image identité est une convolution avec une matrice identité. Il n'a donc aucun changement avec l'image initiale. Si nous comparons les images `M1` et `M2`, nous pouvons voir que l'image devient de plus en plus floue. Les intensités de gris sont réduites.
+
+## Masque gaussien
+
+Le masque gaussien permet de créer un filtre. Il est paramétré par l’argument `sigma`. Plus le paramètre est élevé (maximum 7), plus l'image devient floue.
+
+`sigma` 0.5 | `sigma` 1 | `sigma`2 |
+---  | ---  | ---  |
+![alt text][boatGaussSigmaDemi] |  ![alt text][boatGaussSigma1]|  ![alt text][boatGaussSigma2] |
 
 
+`sigma` 3 | `sigma` 4 | `sigma`7 |
+---  | ---  | ---  |
+![alt text][boatGaussSigma3] |  ![alt text][boatGaussSigma4]|  ![alt text][boatGaussSigma7] |
 
-### Masque gaussien
+Plus `sigma` est élevé, plus les valeurs de la matrice à ces extrémités seront grand par rapport à sa valeur centrale. De ce fait, l'image devient plus floue à mesure que le `sigma` augmente.
 
-Un masque gaussien est obtenu en discrétisant la fonction gaussienne définie en 2D par :
-```math
-G_\sigma(x,y)= \frac{1}{2\pi\sigma^2}  e^{{\textstyle -\frac{x^2+y^2}{2\sigma^2}}}
-```
-
-Le support (ensemble des points où la fonction est non nulle) de cette fonction est non borné, mais ses valeurs décroissent rapidement à mesure qu'on s'éloigne de l'origine (comme l'inverse de l'exponentielle du carré de la distance à l'origine !). On adopte donc la convention (standard) de l'approcher par un masque de taille $`N\times N`$ avec $`N\approx 6\sigma`$, impair. 
-
-Dans un second temps, il est nécessaire de re-normaliser les coefficients de manière à ce que la somme des poids du masque soit égale à 1.
-<!---
-#### Exemple : 
-- Pour $`\sigma=1`$, la taille du masque sera de $`N\times N=7\times 7`$.
-- Les coefficients du masque seront calculés à partir de $`G_\sigma`$ de la manière suivante :
-$`
-\begin{bmatrix}
-\ldots & \ldots & \ldots & \ldots & \ldots\\
-\ldots & G_\sigma(-1,-1) & G_\sigma(0,-1)& G_\sigma(1,-1)& \ldots\\
-\ldots &G_\sigma(-1,0) & G_\sigma(0,0) & G_\sigma(1,0)& \ldots \\
-\ldots & G_\sigma(-1,1) & G_\sigma(0,1) & G_\sigma(1,1)& \ldots \\
-\ldots & \ldots & \ldots & \ldots & \ldots
-\end{bmatrix}
-`$
-- Les coefficients sont ensuite normalisés de manière à ce que leur somme soit égale à 1.--->
-
-### Travail à réaliser
-
-- Tester votre fonction de convolution avec les masques précalculés $`M_1`$ et $`M_2`$. 
-- Écrire une fonction `gaussianMask` qui renvoie un masque gaussien pour une valeur de $`\sigma`$ passée en paramètre.   
-- Expérimenter des convolutions avec des masques gaussiens pour  $`\sigma=1`$, $`\sigma=2`$, $`\sigma=1/2`$.
-- Les images résultant des convolutions seront converties en images 8 bits par arrondi des valeurs. 
 
 ## Filtres de réhaussement des contours
 
-Les filtres réhausseurs de contours utilisent des masques à coefficients positifs et négatifs dont la somme des poids vaut 1. Ainsi dans les zones homogènes de l'image les niveaux de gris ne sont pas altérés, et dans les zones de transition les contours sont renforcés. Voici des exemples de tels filtres :
+Ce filtre permet de mettre les contours en évidence. Les endroits qui sont [supérieur à 255](https://git.unistra.fr/nadeauotis/P4y/blob/master/TP3/src/bas_niveau.hpp#L294-303) seront tronqués à 255. Les endroits [inférieurs à 0](https://git.unistra.fr/nadeauotis/P4y/blob/master/TP3/src/bas_niveau.hpp#L294-303) seront tronqués vers le haut à 0.
 
-$`M_3=
-\begin{bmatrix}
-0&-1&0\\
--1&5&-1\\
-0&-1&0
-\end{bmatrix}`$,
-$`\;M_4=
-\begin{bmatrix}
--1&-1&-1\\
--1&9&-1\\
--1&-1&-1
-\end{bmatrix}`$
+`M3` | `M4`
+---  | ---  
+![alt text][boatM3] |  ![alt text][boatM4]
 
-Les valeurs de l'image résultante peuvent sortir de l'intervalle des valeurs de l'image initiale.
-Habituellement on effectue une troncature du résultat en calculant pour chaque valeur v :
+Le filtre `M4` met les contours trop en évidence, nous avons l'impression que l'image contient des artéfacts. Pour permettre le plein potentiel au filtre M4, nous pourrions l'utiliser avec un filtre gaussien. Regardons les résultats avec un filtre gaussien sur `M3` et `M4`.
 
-$`
-v=\left\{
-\begin{array}{cl}
-0, &  \text{si } v\leq 0  \\
-v, &   \text{si }v \in [0\ldots 255]  \\
-255, &  \text{si }v\geq 255 
-\end{array}\right.`$
+`M3` | `Sigma 2` | `Sigma 3` | `Sigma 7`
+---  | ---  |  --- | --- |
+Résultat: | ![alt text][boatGaussSigma2M3] |  ![alt text][boatGaussSigma3M3] | ![alt text][boatGaussSigma7M3]
 
-### Travail à réaliser
+`M4` | `Sigma 2` | `Sigma 3` | `Sigma 7`
+---  | ---  |  --- | --- |
+Résultat: | ![alt text][boatGaussSigma2M4] |  ![alt text][boatGaussSigma3M4] | ![alt text][boatGaussSigma7M4]
 
-- Expérimenter les filtres de réhaussement des contours définis par les masques $`M_3`$ et $`M_4`$.
-- Expérimenter des réhaussements de contours sur des images lissées par des filtres gaussiens pour plusieurs valeurs de $`\sigma`$.
+
+Les images restent très floues, sauf que les contours sont plus apparents et mieux définis. Dû au filtre de `sigma`, le bruit présent sur le filtre `M4` a pratiquement disparu.
 
 ## Filtres détecteurs d'arêtes
 
-Les masques de Sobel horizontaux et verticaux définissent des filtres détecteurs d'arête  :
+Les filtres détecteurs d'arêtes sont convoqués avec 2 matrices. Une matrice [horizontal](https://git.unistra.fr/nadeauotis/P4y/blob/master/TP3/src/mainSobel.cpp#L32-37) et une autre matrice [vertical](https://git.unistra.fr/nadeauotis/P4y/blob/master/TP3/src/mainSobel.cpp#L38-43). Par la suite, on doit récupérer la valeur absolue de chaque pixel sur l'image convoluée. Ensuite, on [normalise](https://git.unistra.fr/nadeauotis/P4y/blob/master/TP3/src/bas_niveau.hpp#L335-350) les matrices et on fait convolué les matrices sortantes entre elles pour obtenir une superposition des images.
 
-$`S_x= 
-\begin{bmatrix}
--1&0&1\\
--2&0&2\\
--1&0&1
-\end{bmatrix},\;`$
-et 
-$`S_y=\begin{bmatrix}
--1&-2&-1\\
-0&0&0\\
-1&2&1
-\end{bmatrix}`$
 
-Il est à noter que les valeurs de l'image résultante peuvent sortir de l'intervalle des valeurs de l'image initiale, et qu'on s'intéresse ici davantage à la *valeur absolue* de la réponse du filtre en chaque point, qu'à l'image elle même. 
+`Sobel` X | `Sobel` Y | `Sobel` Comp
+---  | ---  |  --- |
+![alt text][boatSobelX] | ![alt text][boatSobelY] |  ![alt text][boatSobelXY]
 
-Cependant si l'on souhaite visualiser le résultat dans une image 8 bits, il est nécessaire, d'une part, de calculer la valeur absolue de la réponse, d'autre part, de normaliser les valeurs par la somme des poids "positifs" (ici P=4).
-Enfin, toujours à des fins de visualisation, il peut être intéressant d'étirer le contraste de l'image afin que la valeur maximale soit égale à 255.
+Mon algorithme a une erreur puisque mon `sobel`  de X et Y sont les mêmes. Mon `sobel` de Y aurait dû détecté les lignes verticales au lieu des lignes horizontales. J'ai décidé de superposer mes deux images pour voir le résultat. J'étais seulement curieux.  
 
-### Travail à réaliser
+## Conclusion
 
-- À partir de ces noyaux, écrire un programme  permettant de calculer et de stocker dans une image `uint8_t` une carte des contours par approximation de la norme (ou magnitude) du gradient.
+Les trois types de filtres nous ont permis de manipuler des images et d'obtenir des résultats différents à chaque fois.
 
-- On souhaite maintenant calculer une "pyramide" de carte de contours. Calculer une carte de contours par la méthode précédente sur plusieurs versions lissées d'une image par un filtre gaussien avec des écarts-types $`\sigma`$ croissants.
--  Extraire les contours les plus significatifs à chaque niveau de la pyramide à l'aide d'un seuillage.
--  Dans le rapport, représenter l'image des contours extraits pour chaque valeur retenue de $`\sigma`$.
+##### Filtre de lissage
+Ces filtres permettent de flouer une image. Elle lisse les détails et uniformise les couleurs de l'image initiale.
 
-## Bonus
+##### Masque gaussien
+Ce filtre permet aussi de flouer des images, sauf que celui-ci est paramétré par un argument `sigma`. Plus `sigma` est élevé ,plus l'image est flouée et plus `sigma` est petit, moins l'image sera flouée.
 
-L'opérateur de convolution en deux dimensions peut vite devenir coûteux en temps de calcul pour des tailles élevées du masque.
-Un moyen de réduire fortement les temps de calcul est d'utiliser la propriété d'associativité de la convolution.
-Un masque $`M`$ est dit séparable s'il peut être décomposé en deux masques $`M_1`$ et $`M_2`$ tels que : $`M=M_1\ast M_2`$.
-Comme la convolution est associative, on peut alors écrire :
-```math
-I\ast M=I\ast (M_1\ast M_2)=(I\ast M_1)\ast M_2
-```
+##### Filtres de réhaussement des contours
 
-Par exemple un filtre moyenneur (ce qui signifie : dont tous les coefficients sont égaux et de somme 1) est séparable puisqu'on peut écrire :
-```math
-\frac{1}{9}
-\begin{bmatrix}
-1 & 1 & 1\\
-1 & 1 & 1\\
-1 & 1 & 1
-\end{bmatrix}
-=
-\left(
-\frac{1}{3}\begin{bmatrix}
-1 \\ 
-1 \\ 
-1
-\end{bmatrix}
-\ast \frac{1}{3}
-\begin{bmatrix}
-1 & 1 & 1
-\end{bmatrix}
-\right)
-```
+Ce filtre altère les niveaux de gris lorsque l'image change d'intensité de gris. Elle permet de mettre en évidence les contours d'une image.
 
-Un filtre moyenneur par un masque 2D peut donc se décomposer en deux filtres moyenneurs par des masques 1D (plus rapides à calculer).
+##### Filtres détecteurs d'arêtes
+Ce filtre ressemble au filtre de réhaussement des contours, mais au lieu de détecter l'intensité des niveaux de gris, il est l'interpolation de 2 filtres qui détecte des lignes horizontale et verticale dans une image.
 
-### Travail à réaliser
 
-- Le masque gaussien est séparable. Écrire une fonction qui calcule un filtre gaussien pour un écart-type donné en utilisant le principe de décomposition ci-dessus. Comparer avec les résultats obtenus avec un masque 2D.
-- Comparer le nombre de multiplications à effectuer :
-	- pour calculer la convolution d'une image de $`N`$ pixels par un masque 2D de taille $`M\times M`$
-	- pour calculer deux convolutions d'une image de $`N`$ pixels par deux masques 1D de taille $`M`$
+## Perspective
+
+Il aurait été intéressant de connaitre pourquoi il se forme un encadré noir autour d'une photo, lorsque `sigma` augmente. Il aurait été aussi intéressant de vérifier mon algorithme de filtres détecteurs d'arêtes puisque celui-ci me retour le même filtre sur 2 masques différents.
 
 
 
-
+[boatM1]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatM1.png
+[boatM2]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatM2.png
+[boatM2]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatM2.png
+[boatM3]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatM3.png
+[boatM4]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatM4.png
+[boatMatrice]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatMatrice.png
+[boatGaussSigma1]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigma1.png
+[boatGaussSigma2]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigma2.png
+[boatGaussSigma3]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigma3.png
+[boatGaussSigma4]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigma4.png
+[boatGaussSigma7]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigma7.png
+[boatGaussSigmaDemi]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigmaDemi.png
+[boatGaussSigma2M3]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigma2M3.png
+[boatGaussSigma3M3]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigma3M3.png
+[boatGaussSigma7M3]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigma7M3.png
+[boatGaussSigma2M4]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigma2M3.png
+[boatGaussSigma3M4]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigma3M3.png
+[boatGaussSigma7M4]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatGaussSigma7M3.png
+[boatSobelX]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatSobelX.png
+[boatSobelY]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatSobelY.png
+[boatSobelXY]: https://git.unistra.fr/nadeauotis/P4y/raw/master/TP3/images/boatSobelYX.png
